@@ -1,4 +1,4 @@
-from flask import Flask, session
+from flask import Flask, request, session
 from sqlalchemy import inspect, text
 
 import config_manager
@@ -6,6 +6,7 @@ from blueprints import register_blueprints
 from blueprints.cart import FREE_SHIPPING_THRESHOLD
 from config_manager import ensure_database_exists, load_env_config, mask_uri
 from models import Category, db
+from themes import SITES, SITES_ORDER
 
 
 def create_app() -> Flask:
@@ -83,6 +84,9 @@ def create_app() -> Flask:
                 categories_nav = Category.query.order_by(Category.name.asc()).all()
             except Exception:
                 categories_nav = []
+        active_theme = None
+        if request.view_args and "theme" in request.view_args:
+            active_theme = request.view_args.get("theme")
         return {
             "cart_count": cart_count,
             "db_status": {
@@ -94,6 +98,8 @@ def create_app() -> Flask:
             },
             "categories_nav": categories_nav,
             "free_shipping_threshold": FREE_SHIPPING_THRESHOLD,
+            "all_sites": [SITES[k] for k in SITES_ORDER],
+            "active_theme": active_theme,
         }
 
     register_blueprints(app)

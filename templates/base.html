@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Atelier Kibako — Boîtes à musique artisanales en bois{% endblock %}</title>
-  <meta name="description" content="{% block meta_description %}Boîtes à musique artisanales en bois nobles (cerisier sakura, noyer kurumi, cyprès hinoki) inspirées des univers Manga, Studio Ghibli, Jeux Vidéo et Cinéma. Configurateur 3D WebGL &amp; synthèse acoustique.{% endblock %}">
+  <title>{% block title %}{% if site %}{{ site.brand_name }} — Boîtes à musique{% else %}Atelier Kibako Hub — 5 Univers de Boîtes à Musique{% endif %}{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}Plateforme multi-boutiques de boîtes à musique en bois avec Studio CAD 3D WebGL, Web Audio API DSP et ORM SQLAlchemy MariaDB/SQLite.{% endblock %}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=JetBrains+Mono:wght@400;600&family=Montserrat:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Quicksand:wght@500;600;700&family=Shippori+Mincho:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/themes.css') }}">
 
-  <!-- Import Map Three.js (WebGL 3D CAD Engine) -->
   <script type="importmap">
   {
     "imports": {
@@ -19,13 +19,23 @@
     }
   }
   </script>
-  <!-- GSAP 3.12 & Chart.js 4.4 -->
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
 </head>
-<body>
-  <div class="promo-bar">
-    Livraison offerte dès <strong>{{ "%.0f"|format(free_shipping_threshold) }} €</strong> · Inspecteur CAD 3D WebGL &amp; Synthèse acoustique Web Audio API
+<body class="{% if site %}theme-{{ site.slug }}{% endif %}">
+  <!-- Barre Hub inter-sites -->
+  <div class="site-switcher-bar">
+    <div class="container site-switcher-inner">
+      <a href="{{ url_for('shop.index') }}" style="font-weight:700;white-space:nowrap;">← HUB DES 5 SITES</a>
+      <div class="switcher-links">
+        {% for s in all_sites %}
+          <a href="{{ url_for('shop.site_index', theme=s.slug) }}"
+             class="switcher-pill {% if site and site.slug == s.slug %}active{% endif %}">
+            {{ s.brand_name }}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
   </div>
 
   {% if not db_status.ready or not db_status.configured %}
@@ -45,19 +55,24 @@
 
   <header class="site-header">
     <div class="container nav-inner">
-      <a href="{{ url_for('shop.index') }}" class="brand">
+      <a href="{% if site %}{{ url_for('shop.site_index', theme=site.slug) }}{% else %}{{ url_for('shop.index') }}{% endif %}" class="brand">
         <span class="brand-mark" aria-hidden="true">木</span>
         <span class="brand-text">
-          <span class="brand-name">Atelier Kibako</span>
-          <span class="brand-sub">Ébénisterie &amp; Ingénierie 3D</span>
+          <span class="brand-name">{% if site %}{{ site.brand_name }}{% else %}Atelier Kibako Hub{% endif %}</span>
+          <span class="brand-sub">{% if site %}{{ site.subtitle }}{% else %}5 Boutiques · 1 Moteur 3D &amp; ORM{% endif %}</span>
         </span>
       </a>
 
       <nav class="nav-links" aria-label="Navigation principale">
-        <a href="{{ url_for('shop.index') }}" class="{% if request.endpoint == 'shop.index' %}active{% endif %}">Accueil</a>
-        <a href="{{ url_for('shop.catalogue') }}" class="{% if request.endpoint == 'shop.catalogue' %}active{% endif %}">Catalogue</a>
-        <a href="{{ url_for('admin.admin_dashboard') }}" class="{% if request.endpoint == 'admin.admin_dashboard' %}active{% endif %}">Atelier Admin</a>
-        <a href="{{ url_for('setup.setup_page') }}" class="{% if request.endpoint == 'setup.setup_page' %}active{% endif %}">Configuration ORM</a>
+        <a href="{{ url_for('shop.index') }}" class="{% if request.endpoint == 'shop.index' %}active{% endif %}">Hub</a>
+        {% if site %}
+          <a href="{{ url_for('shop.site_index', theme=site.slug) }}" class="{% if request.endpoint == 'shop.site_index' %}active{% endif %}">Vitrine</a>
+          <a href="{{ url_for('shop.site_catalogue', theme=site.slug) }}" class="{% if request.endpoint == 'shop.site_catalogue' %}active{% endif %}">Catalogue</a>
+        {% else %}
+          <a href="{{ url_for('shop.catalogue') }}">Catalogue</a>
+        {% endif %}
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="{% if request.endpoint == 'admin.admin_dashboard' %}active{% endif %}">Admin</a>
+        <a href="{{ url_for('setup.setup_page') }}" class="{% if request.endpoint == 'setup.setup_page' %}active{% endif %}">Setup ORM</a>
       </nav>
 
       <div class="nav-actions">
@@ -91,17 +106,16 @@
     <div class="container">
       <div class="footer-grid">
         <div>
-          <h4>Atelier Kibako</h4>
-          <p style="font-size:0.9rem;color:#bdb2a4;max-width:40ch;">
-            Ébénisterie musicale inspirée des traditions japonaises. Chaque coffret marie essences de bois sélectionnées et mécanismes à lames accordés avec précision.
+          <h4>{% if site %}{{ site.brand_name }}{% else %}Atelier Kibako Hub{% endif %}</h4>
+          <p style="font-size:0.9rem;color:#bdb2a4;max-width:42ch;">
+            {% if site %}{{ site.tagline }} — Inspiré de {{ site.inspiration_url }}.{% else %}Hub multi-univers propulsé par Flask Blueprints, SQLAlchemy 2.x (MariaDB/SQLite), Three.js WebGL et Web Audio API.{% endif %}
           </p>
         </div>
         <div>
-          <h4>Boutique</h4>
+          <h4>Les 5 Boutiques</h4>
           <ul>
-            <li><a href="{{ url_for('shop.catalogue') }}">Toutes les boîtes à musique</a></li>
-            {% for cat in categories_nav %}
-              <li><a href="{{ url_for('shop.catalogue', category=cat.slug) }}">{{ cat.name }}</a></li>
+            {% for s in all_sites %}
+              <li><a href="{{ url_for('shop.site_index', theme=s.slug) }}">{{ s.brand_name }} ({{ s.inspiration_url }})</a></li>
             {% endfor %}
           </ul>
         </div>
@@ -115,7 +129,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <span>© Atelier Kibako — Flask Blueprints · SQLAlchemy 2.x · Three.js WebGL · GSAP · Chart.js</span>
+        <span>© Atelier Kibako — 5 Sites Thématisés · Flask Blueprints · Three.js WebGL · Chart.js</span>
         <span>Frais de port offerts dès 80 €</span>
       </div>
     </div>

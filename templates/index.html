@@ -1,29 +1,27 @@
 {% extends "base.html" %}
 
-{% block title %}Atelier Kibako — Boîtes à musique en bois &amp; Studio CAD 3D{% endblock %}
+{% block title %}{{ site.brand_name }} — {{ site.tagline }}{% endblock %}
 
 {% block content %}
 <section class="hero">
   <div class="container hero-grid">
     <div>
-      <div class="hero-kicker">Ébénisterie Musicale · Blueprints &amp; WebGL 3D</div>
-      <h1>Des mélodies cultes sculptées dans le bois massif.</h1>
-      <p class="hero-lead">
-        Chaque boîte à musique Atelier Kibako réunit la chaleur du cerisier sakura, du noyer kurumi ou du cyprès hinoki avec un peigne en laiton accordé sur vos thèmes favoris. Inspectez nos mécanismes en 3D temps réel.
-      </p>
+      <div class="hero-kicker">{{ site.hero_kicker }}</div>
+      <h1>{{ site.hero_title }}</h1>
+      <p class="hero-lead">{{ site.hero_desc }}</p>
       <div class="hero-cta">
-        <a href="{{ url_for('shop.catalogue') }}" class="btn btn-primary">Explorer le catalogue</a>
-        <a href="{{ url_for('setup.setup_page') }}" class="btn btn-secondary">Configurer MariaDB (/setup)</a>
+        <a href="{{ url_for('shop.site_catalogue', theme=site.slug) }}" class="btn btn-primary">{{ site.cta_primary }}</a>
+        <a href="#studio-3d" class="btn btn-secondary">{{ site.cta_secondary }}</a>
       </div>
     </div>
 
-    <div class="cad-stage">
-      <div class="cad-header">
-        <span><strong>Studio CAD 3D</strong> · Inspection mécanique temps réel</span>
-        <span class="cad-badge">THREE.JS · PBR · ORBIT</span>
+    <div class="cad-stage" id="studio-3d">
+      <div class="cad-header" style="background:{{ site.cad_bg }};">
+        <span><strong>Studio CAD 3D</strong> · {{ site.brand_name }}</span>
+        <span class="cad-badge" style="color:{{ site.cad_accent }};">THREE.JS · PBR · ORBIT</span>
       </div>
       <div class="cad-viewport" data-kibako-3d data-wood="Noyer Kurumi" data-mechanism="30 lames Sankyo"></div>
-      <div class="cad-toolbar">
+      <div class="cad-toolbar" style="background:{{ site.cad_bg }};">
         <div class="cad-btn-group">
           <button type="button" class="cad-btn" data-cad="explode">Vue éclatée</button>
           <button type="button" class="cad-btn" data-cad="lid">Ouvrir / Fermer</button>
@@ -47,28 +45,28 @@
   <div class="container">
     <div class="section-header">
       <div>
-        <h2>Pièces Vedettes de l'Atelier</h2>
-        <p class="section-sub">Nos créations les plus demandées, avec simulateur 3D &amp; oscilloscope DSP sur chaque fiche.</p>
+        <h2>Sélection {{ site.brand_name }}</h2>
+        <p class="section-sub">Chaque création intègre l'inspecteur 3D WebGL et le lecteur acoustique Web Audio API.</p>
       </div>
-      <a href="{{ url_for('shop.catalogue') }}" class="btn btn-secondary btn-sm">Voir tout le catalogue →</a>
+      <a href="{{ url_for('shop.site_catalogue', theme=site.slug) }}" class="btn btn-secondary btn-sm">Voir tout le catalogue →</a>
     </div>
 
     {% if featured_products %}
       <div class="product-grid">
         {% for product in featured_products %}
           <article class="product-card">
-            <a href="{{ url_for('shop.product_detail', slug=product.slug) }}" class="product-thumb">
+            <a href="{{ url_for('shop.site_product_detail', theme=site.slug, slug=product.slug) }}" class="product-thumb">
               <img src="{{ product.image_url }}" alt="{{ product.name }}">
-              <span class="product-universe-tag">{{ product.universe }}</span>
+              <span class="product-universe-tag">{{ site.badge_label }} · {{ product.universe }}</span>
             </a>
             <div class="product-body">
               <h3 class="product-title">
-                <a href="{{ url_for('shop.product_detail', slug=product.slug) }}">{{ product.name }}</a>
+                <a href="{{ url_for('shop.site_product_detail', theme=site.slug, slug=product.slug) }}">{{ product.name }}</a>
               </h3>
               <div class="product-meta">{{ product.wood_type }} · {{ product.mechanism }}</div>
               <div class="product-footer">
                 <span class="price">{{ "%.2f"|format(product.price) }} €</span>
-                <a href="{{ url_for('shop.product_detail', slug=product.slug) }}" class="btn btn-primary btn-sm">Inspecter 3D &amp; Écouter</a>
+                <a href="{{ url_for('shop.site_product_detail', theme=site.slug, slug=product.slug) }}" class="btn btn-primary btn-sm">Inspecter 3D</a>
               </div>
             </div>
           </article>
@@ -86,45 +84,17 @@
   <div class="container">
     <div class="section-header">
       <div>
-        <h2>Nos Univers Musicaux</h2>
-        <p class="section-sub">Quatre collections pensées pour les passionnés d'animation, de jeux vidéo et de cinéma.</p>
+        <h2>Collections &amp; Univers</h2>
+        <p class="section-sub">Explorez nos 4 gammes thématiques dans le style {{ site.inspiration_url }}.</p>
       </div>
     </div>
     <div class="universes-grid">
       {% for cat in categories %}
-        <a href="{{ url_for('shop.catalogue', category=cat.slug) }}" class="universe-card">
+        <a href="{{ url_for('shop.site_catalogue', theme=site.slug, category=cat.slug) }}" class="universe-card">
           <h3>{{ cat.name }}</h3>
           <p>{{ cat.description }}</p>
         </a>
       {% endfor %}
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container">
-    <div class="section-header">
-      <div>
-        <h2>Architecture Technique &amp; Savoir-Faire</h2>
-        <p class="section-sub">Une acoustique naturelle portée par la noblesse du bois et une pile logicielle moderne.</p>
-      </div>
-    </div>
-    <div class="craft-grid">
-      <div class="craft-item">
-        <div class="craft-num">01 · RENDU 3D WEBGL</div>
-        <h3>Moteur Three.js &amp; GSAP</h3>
-        <p>Modélisation procédurale du coffret, des textures de bois PBR, du cylindre picoté et du peigne à lames animé en temps réel.</p>
-      </div>
-      <div class="craft-item">
-        <div class="craft-num">02 · TRAITEMENT DSP</div>
-        <h3>Web Audio API &amp; FFT</h3>
-        <p>Synthèse harmonique des lames en laiton couplée à un oscilloscope temporel et fréquentiel synchronisé à la rotation 3D.</p>
-      </div>
-      <div class="craft-item">
-        <div class="craft-num">03 · BACKEND MODULAIRE</div>
-        <h3>Flask Blueprints &amp; ORM 2.x</h3>
-        <p>Architecture découpée en 5 Blueprints, bascule à chaud MariaDB/SQLite sans redémarrage et transactions atomiques.</p>
-      </div>
     </div>
   </div>
 </section>

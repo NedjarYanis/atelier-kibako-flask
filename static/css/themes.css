@@ -1,0 +1,310 @@
+/* ==========================================================================
+   Atelier Kibako — 5 Identités Visuelles Distinctes + Hub Central
+   1. roche-bobois  (Luxe architectural & French Art de Vivre)
+   2. popchart      (Blueprint infographique & taxonomie technique)
+   3. fromourplace  (D2C chaleureux, terracotta & pastels arrondis)
+   4. fishwife      (Néo-vintage pop, bordures noires & ombres dures)
+   5. lepetitsouk   (Concept-store poétique, doux & pétillant)
+   ========================================================================== */
+
+/* Barre de navigation inter-sites (Hub Switcher) */
+.site-switcher-bar {
+  background: #141210;
+  color: #e9e2d8;
+  font-size: 0.78rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.site-switcher-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.45rem 0;
+  overflow-x: auto;
+}
+
+.switcher-links {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: nowrap;
+}
+
+.switcher-pill {
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #cfc6b9;
+  white-space: nowrap;
+  transition: all 0.18s ease;
+}
+
+.switcher-pill:hover {
+  border-color: rgba(255, 255, 255, 0.45);
+  color: #ffffff;
+}
+
+.switcher-pill.active {
+  background: #ffffff;
+  color: #141210;
+  border-color: #ffffff;
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   HUB CENTRAL (/)
+   -------------------------------------------------------------------------- */
+.hub-hero {
+  padding: 3.2rem 0 2.2rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.hub-hero h1 {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 3.6vw, 3.1rem);
+  line-height: 1.12;
+  margin: 0 0 0.9rem;
+}
+
+.hub-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  padding: 2.5rem 0 3.5rem;
+}
+
+.hub-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.hub-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-soft);
+}
+
+.hub-card-banner {
+  padding: 1.5rem 1.4rem 1.25rem;
+  border-bottom: 1px solid var(--border-subtle);
+  position: relative;
+}
+
+.hub-card-banner[data-hub-theme="roche-bobois"] {
+  background: #111111;
+  color: #ffffff;
+}
+
+.hub-card-banner[data-hub-theme="popchart"] {
+  background: #1b365d;
+  color: #f7f4eb;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.hub-card-banner[data-hub-theme="fromourplace"] {
+  background: #c85a32;
+  color: #fdf8f3;
+}
+
+.hub-card-banner[data-hub-theme="fishwife"] {
+  background: #f7d147;
+  color: #1a1a1a;
+  border-bottom: 2.5px solid #1a1a1a;
+}
+
+.hub-card-banner[data-hub-theme="lepetitsouk"] {
+  background: linear-gradient(135deg, #f9d5d3 0%, #cde8e0 100%);
+  color: #2d2522;
+}
+
+.hub-swatches {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.9rem;
+}
+
+.hub-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0, 0, 0, 0.2);
+}
+
+.hub-card-body {
+  padding: 1.35rem 1.4rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* --------------------------------------------------------------------------
+   THEME 1 : ROCHE BOBOIS (Luxe architectural & galerie épurée)
+   -------------------------------------------------------------------------- */
+body.theme-roche-bobois {
+  --bg-washi: #ffffff;
+  --bg-surface: #f4f2ee;
+  --bg-card: #ffffff;
+  --bg-dark: #111111;
+  --ink-primary: #111111;
+  --ink-secondary: #4a4a4a;
+  --ink-muted: #7a7a7a;
+  --accent-cedar: #111111;
+  --accent-cedar-hover: #333333;
+  --accent-brass: #c5a059;
+  --border-subtle: rgba(17, 17, 17, 0.1);
+  --border-strong: rgba(17, 17, 17, 0.25);
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 4px;
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Montserrat", "Plus Jakarta Sans", sans-serif;
+}
+
+body.theme-roche-bobois .product-card {
+  box-shadow: none;
+  border: 1px solid #e6e3dd;
+}
+
+body.theme-roche-bobois .btn-primary {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.82rem;
+}
+
+/* --------------------------------------------------------------------------
+   THEME 2 : POP CHART (Blueprint infographique & taxonomie)
+   -------------------------------------------------------------------------- */
+body.theme-popchart {
+  --bg-washi: #f7f4eb;
+  --bg-surface: #ece7d9;
+  --bg-card: #fffdf7;
+  --bg-dark: #1b365d;
+  --ink-primary: #1b365d;
+  --ink-secondary: #2e4a70;
+  --ink-muted: #5e728f;
+  --accent-cedar: #d94e34;
+  --accent-cedar-hover: #b83c24;
+  --accent-brass: #e8b84b;
+  --border-subtle: rgba(27, 54, 93, 0.2);
+  --border-strong: #1b365d;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --font-serif: "Space Grotesk", sans-serif;
+  --font-sans: "Space Grotesk", "Plus Jakarta Sans", sans-serif;
+}
+
+body.theme-popchart .hero {
+  background-image: radial-gradient(rgba(27, 54, 93, 0.14) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+body.theme-popchart .product-card,
+body.theme-popchart .panel,
+body.theme-popchart .universe-card {
+  border: 2px solid #1b365d;
+  box-shadow: 4px 4px 0 rgba(27, 54, 93, 0.14);
+}
+
+/* --------------------------------------------------------------------------
+   THEME 3 : OUR PLACE (Warm D2C Terracotta & Pastel Rounded)
+   -------------------------------------------------------------------------- */
+body.theme-fromourplace {
+  --bg-washi: #fdf8f3;
+  --bg-surface: #f5ebe0;
+  --bg-card: #ffffff;
+  --bg-dark: #3d312a;
+  --ink-primary: #3d312a;
+  --ink-secondary: #68574d;
+  --ink-muted: #938176;
+  --accent-cedar: #c85a32;
+  --accent-cedar-hover: #a84724;
+  --accent-brass: #7e8d74;
+  --border-subtle: rgba(61, 49, 42, 0.1);
+  --border-strong: rgba(61, 49, 42, 0.2);
+  --radius-sm: 14px;
+  --radius-md: 22px;
+  --radius-lg: 28px;
+  --font-serif: "Fraunces", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+}
+
+body.theme-fromourplace .btn {
+  border-radius: 999px;
+}
+
+/* --------------------------------------------------------------------------
+   THEME 4 : FISHWIFE (Néo-vintage pop, bordures franches & ombres dures)
+   -------------------------------------------------------------------------- */
+body.theme-fishwife {
+  --bg-washi: #fff9ec;
+  --bg-surface: #f7d147;
+  --bg-card: #ffffff;
+  --bg-dark: #1a1a1a;
+  --ink-primary: #1a1a1a;
+  --ink-secondary: #333333;
+  --ink-muted: #555555;
+  --accent-cedar: #e84a3c;
+  --accent-cedar-hover: #c9372a;
+  --accent-brass: #1d4ed8;
+  --border-subtle: #1a1a1a;
+  --border-strong: #1a1a1a;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --font-serif: "Fraunces", Georgia, serif;
+  --font-sans: "Space Grotesk", "Plus Jakarta Sans", sans-serif;
+}
+
+body.theme-fishwife .product-card,
+body.theme-fishwife .panel,
+body.theme-fishwife .universe-card,
+body.theme-fishwife .craft-item {
+  border: 2.5px solid #1a1a1a;
+  box-shadow: 5px 5px 0 #1a1a1a;
+}
+
+body.theme-fishwife .btn-primary,
+body.theme-fishwife .btn-secondary {
+  border: 2px solid #1a1a1a;
+  box-shadow: 3px 3px 0 #1a1a1a;
+}
+
+/* --------------------------------------------------------------------------
+   THEME 5 : LE PETIT SOUK (Concept-store poétique & pétillant)
+   -------------------------------------------------------------------------- */
+body.theme-lepetitsouk {
+  --bg-washi: #fffdfb;
+  --bg-surface: #f9ebe9;
+  --bg-card: #ffffff;
+  --bg-dark: #382d2a;
+  --ink-primary: #382d2a;
+  --ink-secondary: #685752;
+  --ink-muted: #988680;
+  --accent-cedar: #d96b43;
+  --accent-cedar-hover: #bd5630;
+  --accent-brass: #f4c95d;
+  --border-subtle: rgba(217, 107, 67, 0.16);
+  --border-strong: rgba(217, 107, 67, 0.35);
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 26px;
+  --font-serif: "Fraunces", Georgia, serif;
+  --font-sans: "Quicksand", "Plus Jakarta Sans", sans-serif;
+}
+
+body.theme-lepetitsouk .hero {
+  background: linear-gradient(180deg, #fdf3f2 0%, #fffdfb 100%);
+}
+
+body.theme-lepetitsouk .product-card {
+  border: 1.5px solid #f2dcd8;
+}

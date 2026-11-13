@@ -1,19 +1,20 @@
 {% extends "base.html" %}
 
-{% block title %}Catalogue — Atelier Kibako{% endblock %}
+{% block title %}Catalogue {{ site.brand_name }} — Boîtes à musique{% endblock %}
 
 {% block content %}
 <section class="section">
   <div class="container">
     <div class="section-header">
       <div>
+        <div class="hero-kicker">{{ site.brand_name }} · {{ site.inspiration_url }}</div>
         <h1>Catalogue des Boîtes à Musique</h1>
         <p class="section-sub">Filtrez par univers, essence de bois ou mécanisme et écoutez chaque mélodie.</p>
       </div>
       <span class="mono" style="color:var(--ink-muted);">{{ products|length }} création(s)</span>
     </div>
 
-    <form class="filter-bar" method="get" action="{{ url_for('shop.catalogue') }}">
+    <form class="filter-bar" method="get" action="{{ url_for('shop.site_catalogue', theme=site.slug) }}">
       <div>
         <label for="filter-q">Recherche</label>
         <input type="text" id="filter-q" name="q" value="{{ filters.get('q', '') }}" placeholder="Totoro, Naruto, noyer…">
@@ -61,7 +62,7 @@
 
       <div style="display:flex;gap:0.45rem;">
         <button type="submit" class="btn btn-primary">Filtrer</button>
-        <a href="{{ url_for('shop.catalogue') }}" class="btn btn-secondary">Réinitialiser</a>
+        <a href="{{ url_for('shop.site_catalogue', theme=site.slug) }}" class="btn btn-secondary">Réinitialiser</a>
       </div>
     </form>
 
@@ -69,13 +70,13 @@
       <div class="product-grid">
         {% for product in products %}
           <article class="product-card">
-            <a href="{{ url_for('shop.product_detail', slug=product.slug) }}" class="product-thumb">
+            <a href="{{ url_for('shop.site_product_detail', theme=site.slug, slug=product.slug) }}" class="product-thumb">
               <img src="{{ product.image_url }}" alt="{{ product.name }}">
               <span class="product-universe-tag">{{ product.universe }}</span>
             </a>
             <div class="product-body">
               <h3 class="product-title">
-                <a href="{{ url_for('shop.product_detail', slug=product.slug) }}">{{ product.name }}</a>
+                <a href="{{ url_for('shop.site_product_detail', theme=site.slug, slug=product.slug) }}">{{ product.name }}</a>
               </h3>
               <div class="product-meta">
                 {{ product.melody_title }} · {{ product.wood_type }}<br>
@@ -88,7 +89,7 @@
               </div>
               <div class="product-footer">
                 <span class="price">{{ "%.2f"|format(product.price) }} €</span>
-                <a href="{{ url_for('shop.product_detail', slug=product.slug) }}" class="btn btn-primary btn-sm">Découvrir</a>
+                <a href="{{ url_for('shop.site_product_detail', theme=site.slug, slug=product.slug) }}" class="btn btn-primary btn-sm">Découvrir</a>
               </div>
             </div>
           </article>

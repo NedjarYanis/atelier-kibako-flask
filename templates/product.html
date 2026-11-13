@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}{{ product.name }} — Atelier Kibako{% endblock %}
+{% block title %}{{ product.name }} — {{ site.brand_name }}{% endblock %}
 
 {% block content %}
 <section class="section">
   <div class="container">
     <p style="font-size:0.86rem;color:var(--ink-muted);margin-bottom:1.25rem;">
-      <a href="{{ url_for('shop.catalogue') }}">Catalogue</a> /
-      <a href="{{ url_for('shop.catalogue', category=product.category.slug) }}">{{ product.category.name }}</a> /
+      <a href="{{ url_for('shop.site_catalogue', theme=site.slug) }}">Catalogue {{ site.brand_name }}</a> /
+      <a href="{{ url_for('shop.site_catalogue', theme=site.slug, category=product.category.slug) }}">{{ product.category.name }}</a> /
       <span>{{ product.universe }}</span>
     </p>
 
@@ -17,14 +17,13 @@
           <img src="{{ product.image_url }}" alt="{{ product.name }}">
         </div>
 
-        <!-- Inspecteur 3D CAD synchronisé avec le lecteur audio -->
         <div class="cad-stage">
-          <div class="cad-header">
+          <div class="cad-header" style="background:{{ site.cad_bg }};">
             <span><strong>Inspecteur 3D</strong> · {{ product.wood_type }}</span>
-            <span class="cad-badge">SYNCHRO AUDIO-3D</span>
+            <span class="cad-badge" style="color:{{ site.cad_accent }};">SYNCHRO AUDIO-3D</span>
           </div>
           <div class="cad-viewport" style="height:320px;" data-kibako-3d data-wood="{{ product.wood_type }}" data-mechanism="{{ product.mechanism }}"></div>
-          <div class="cad-toolbar">
+          <div class="cad-toolbar" style="background:{{ site.cad_bg }};">
             <div class="cad-btn-group">
               <button type="button" class="cad-btn" data-cad="explode">Vue éclatée</button>
               <button type="button" class="cad-btn" data-cad="lid">Couvercle</button>
@@ -36,7 +35,7 @@
       </div>
 
       <div>
-        <div class="hero-kicker">{{ product.universe }} · {{ product.category.name }}</div>
+        <div class="hero-kicker">{{ site.badge_label }} · {{ product.universe }}</div>
         <h1 style="font-family:var(--font-serif);margin:0 0 0.6rem;font-size:2rem;line-height:1.2;">{{ product.name }}</h1>
         <div class="price" style="font-size:1.6rem;margin-bottom:1rem;">{{ "%.2f"|format(product.price) }} €</div>
         <p style="color:var(--ink-secondary);">{{ product.description }}</p>
@@ -108,16 +107,16 @@
         <div class="product-grid">
           {% for item in related %}
             <article class="product-card">
-              <a href="{{ url_for('shop.product_detail', slug=item.slug) }}" class="product-thumb">
+              <a href="{{ url_for('shop.site_product_detail', theme=site.slug, slug=item.slug) }}" class="product-thumb">
                 <img src="{{ item.image_url }}" alt="{{ item.name }}">
                 <span class="product-universe-tag">{{ item.universe }}</span>
               </a>
               <div class="product-body">
-                <h3 class="product-title"><a href="{{ url_for('shop.product_detail', slug=item.slug) }}">{{ item.name }}</a></h3>
+                <h3 class="product-title"><a href="{{ url_for('shop.site_product_detail', theme=site.slug, slug=item.slug) }}">{{ item.name }}</a></h3>
                 <div class="product-meta">{{ item.wood_type }}</div>
                 <div class="product-footer">
                   <span class="price">{{ "%.2f"|format(item.price) }} €</span>
-                  <a href="{{ url_for('shop.product_detail', slug=item.slug) }}" class="btn btn-secondary btn-sm">Voir</a>
+                  <a href="{{ url_for('shop.site_product_detail', theme=site.slug, slug=item.slug) }}" class="btn btn-secondary btn-sm">Voir</a>
                 </div>
               </div>
             </article>

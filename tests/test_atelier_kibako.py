@@ -98,16 +98,24 @@ class AtelierKibakoTestCase(unittest.TestCase):
         # Initialiser via /api/setup/save
         self.client.post("/api/setup/save", json={"mode": "sqlite", "seed_demo": True})
 
-        # Accueil & Catalogue & Filtres
-        self.assertEqual(self.client.get("/").status_code, 200)
-        res_cat = self.client.get("/catalogue?q=Totoro")
-        self.assertEqual(res_cat.status_code, 200)
-        self.assertIn(b"Totoro", res_cat.data)
+        # Hub central (/) avec les 5 sites
+        res_hub = self.client.get("/")
+        self.assertEqual(res_hub.status_code, 200)
+        for brand in ["KIBAKO MAISON", "KIBAKO CHART", "NOTRE KIBAKO", "KIBAKO CONSERVE", "LE PETIT KIBAKO"]:
+            self.assertIn(brand.encode("utf-8"), res_hub.data)
 
-        # Fiche produit
-        res_prod = self.client.get("/produit/mon-voisin-totoro-path-of-the-wind")
-        self.assertEqual(res_prod.status_code, 200)
-        self.assertIn(b"Path of the Wind", res_prod.data)
+        # Tester les 5 sites thématisés (accueil, catalogue, fiche produit)
+        for theme in ["roche-bobois", "popchart", "fromourplace", "fishwife", "lepetitsouk"]:
+            self.assertEqual(self.client.get(f"/site/{theme}/").status_code, 200)
+            res_cat = self.client.get(f"/site/{theme}/catalogue?q=Totoro")
+            self.assertEqual(res_cat.status_code, 200)
+            self.assertIn(b"Totoro", res_cat.data)
+            res_prod = self.client.get(f"/site/{theme}/produit/mon-voisin-totoro-path-of-the-wind")
+            self.assertEqual(res_prod.status_code, 200)
+            self.assertIn(b"Path of the Wind", res_prod.data)
+
+        # Thème inconnu -> 404
+        self.assertEqual(self.client.get("/site/inconnu/").status_code, 404)
 
         with self.app.app_context():
             totoro = Product.query.filter_by(slug="mon-voisin-totoro-path-of-the-wind").first()
