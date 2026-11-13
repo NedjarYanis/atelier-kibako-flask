@@ -1,5 +1,15 @@
 # Atelier Kibako — E-Commerce Flask & SQLAlchemy 2.x
 
+<p align="center">
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.11%2B-blue?logo=python&logoColor=white" alt="Python" /></a>
+  <a href="https://flask.palletsprojects.com/"><img src="https://img.shields.io/badge/Flask-3.x-black?logo=flask&logoColor=white" alt="Flask" /></a>
+  <a href="https://www.sqlalchemy.org/"><img src="https://img.shields.io/badge/SQLAlchemy-2.x-red?logo=sqlalchemy&logoColor=white" alt="SQLAlchemy" /></a>
+  <a href="https://mariadb.org/"><img src="https://img.shields.io/badge/MariaDB-Supported-003545?logo=mariadb&logoColor=white" alt="MariaDB" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/Licence-MIT-green" alt="Licence" /></a>
+</p>
+
+<br/>
+
 Boutique artisanale de boîtes à musique en bois massif inspirées des univers **Pop Culture, Manga, Studio Ghibli, Jeux Vidéo et Cinéma**.
 L'application est construite avec **Flask**, **SQLAlchemy 2.x** (connecté à **MariaDB** via PyMySQL ou **SQLite** en aperçu local), un **simulateur acoustique Web Audio API** et une **configuration 100 % visuelle** via `/setup`.
 
@@ -59,84 +69,17 @@ Trois modes sont disponibles :
 2. **Lien / URI direct** : collez une URI `mariadb://...`, `mysql://...` ou `mysql+pymysql://...` — elle est automatiquement normalisée vers `mysql+pymysql://...?charset=utf8mb4`.
 3. **Aperçu Local (SQLite)** : crée instantanément une base locale `instance/atelier_kibako.db` pour tester toute la boutique sans serveur MariaDB.
 
-### Actions disponibles sur `/setup`
-- **Tester la connexion** (`POST /api/setup/test-db`) : mesure la latence en ms, affiche la version du serveur MariaDB/SQLite et fournit des conseils de dépannage en français en cas d'erreur (`Access denied`, port fermé, hôte introuvable…).
-- **Sauvegarder & Initialiser l'ORM** (`POST /api/setup/save`) :
-  - Exécute `CREATE DATABASE IF NOT EXISTS` sur MariaDB si la base n'existe pas encore ;
-  - Écrit le fichier `.env` ;
-  - Bascule le moteur SQLAlchemy **à chaud sans redémarrer Flask** ;
-  - Exécute `db.create_all()` ;
-  - Peuple le catalogue de démo (`seed_catalog()`) : **4 catégories** et **8 boîtes à musique** (*Naruto*, *One Piece*, *Mon Voisin Totoro*, *Zelda*, *Harry Potter*, *Demon Slayer*, *Le Château Ambulant*, *L'Attaque des Titans*).
+---
+
+## Fonctionnalités de la Boutique
+
+- **Catalogue Interactif & Filtres** : Recherche et filtrage par univers (Ghibli, Zelda, Mario, Anime).
+- **Simulateur Acoustique Web Audio API** : Écoute d'un extrait de mélodie généré en temps réel via des oscillateurs Web Audio.
+- **Panier & Gestion des Commandes** : Ajout d'articles, gestion des quantités et récapitulatif de commande.
+- **Administration & Gestion des Stocks** : Tableau de bord simple pour ajouter, modifier ou désactiver des modèles.
 
 ---
 
-## Schéma ORM (`models.py`)
+## Auteur
 
-| Modèle | Table | Colonnes principales |
-| :--- | :--- | :--- |
-| `Category` | `categories` | `id`, `name`, `slug`, `description` |
-| `Product` | `products` | `id`, `name`, `slug`, `universe`, `melody_title`, `melody_notes` (`JSON`), `wood_type`, `mechanism`, `price`, `stock`, `image_url`, `description`, `featured`, `category_id`, `created_at` |
-| `Order` | `orders` | `id`, `order_number`, `customer_name`, `customer_email`, `shipping_address`, `city`, `postal_code`, `total_amount`, `status`, `created_at` |
-| `OrderItem` | `order_items` | `id`, `order_id`, `product_id`, `quantity`, `unit_price` |
-
----
-
-## Routes & APIs
-
-| Route | Méthode(s) | Rôle |
-| :--- | :--- | :--- |
-| `/` | `GET` | Accueil (hero, pièces vedettes, univers, savoir-faire) |
-| `/catalogue` | `GET` | Recherche (`q`) et filtres (`category`, `universe`, `wood`, `mechanism`, `sort`) |
-| `/produit/<slug>` | `GET` | Fiche produit + lecteur audio Web Audio API (`musicbox.js`) |
-| `/panier` | `GET` | Panier session + frais de port offerts dès 80 € |
-| `/panier/ajouter` | `POST` | Ajout au panier |
-| `/panier/modifier` | `POST` | Mise à jour quantité |
-| `/panier/supprimer/<id>` | `POST` | Suppression d'un article |
-| `/commande/valider` | `GET`, `POST` | Validation de commande en transaction ORM avec décrémentation du stock |
-| `/commande/confirmation/<order_number>` | `GET` | Récapitulatif de commande confirmée |
-| `/setup` | `GET` | Interface visuelle de configuration BDD |
-| `/api/setup/test-db` | `POST` | Diagnostic de connexion (version, latence, conseils FR) |
-| `/api/setup/save` | `POST` | Sauvegarde `.env`, création BDD, bascule à chaud & seed |
-| `/admin` | `GET` | Tableau de bord Atelier (produits & commandes) |
-| `/admin/produits/ajouter` | `POST` | Ajout d'un produit |
-| `/admin/produits/<id>/supprimer` | `POST` | Suppression d'un produit |
-| `/admin/commandes/<id>/statut` | `POST` | Mise à jour du statut d'une commande |
-
----
-
-## Structure du Projet
-
-```text
-atelier-kibako-flask/
-├── app.py                  # Application Flask, routes boutique, admin & APIs /setup
-├── config_manager.py       # Normalisation URI, test MariaDB/SQLite, écriture .env
-├── models.py               # Modèles SQLAlchemy 2.x + seed_catalog()
-├── requirements.txt        # Dépendances Python
-├── README.md               # Documentation du projet
-├── static/
-│   ├── css/style.css       # Design system artisanal bois & washi
-│   ├── images/             # Visuels des boîtes à musique et de l'atelier
-│   └── js/
-│       ├── musicbox.js     # Synthétiseur Web Audio API des lames en laiton
-│       └── setup.js        # Logique interactive de /setup
-├── templates/
-│   ├── base.html
-│   ├── index.html
-│   ├── catalogue.html
-│   ├── product.html
-│   ├── cart.html
-│   ├── checkout.html
-│   ├── order_confirmation.html
-│   ├── setup.html
-│   └── admin.html
-└── tests/
-    └── test_atelier_kibako.py
-```
-
----
-
-## Tests Automatisés
-
-```bash
-.venv/bin/python -m unittest discover -s tests -v
-```
+Développé par **[Yanis Nedjar](https://github.com/NedjarYanis)** — BUT Informatique @ IUT d'Orléans.
