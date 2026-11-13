@@ -1,27 +1,43 @@
 {% extends "base.html" %}
 
-{% block title %}Atelier Kibako — Boîtes à musique en bois Pop Culture &amp; Manga{% endblock %}
+{% block title %}Atelier Kibako — Boîtes à musique en bois &amp; Studio CAD 3D{% endblock %}
 
 {% block content %}
 <section class="hero">
   <div class="container hero-grid">
     <div>
-      <div class="hero-kicker">Ébénisterie Musicale · Japon &amp; Pop Culture</div>
+      <div class="hero-kicker">Ébénisterie Musicale · Blueprints &amp; WebGL 3D</div>
       <h1>Des mélodies cultes sculptées dans le bois massif.</h1>
       <p class="hero-lead">
-        Chaque boîte à musique Atelier Kibako réunit la chaleur du cerisier sakura, du noyer kurumi ou du cyprès hinoki avec un peigne en laiton accordé sur vos thèmes favoris de Manga, Studio Ghibli et Jeux Vidéo.
+        Chaque boîte à musique Atelier Kibako réunit la chaleur du cerisier sakura, du noyer kurumi ou du cyprès hinoki avec un peigne en laiton accordé sur vos thèmes favoris. Inspectez nos mécanismes en 3D temps réel.
       </p>
       <div class="hero-cta">
-        <a href="{{ url_for('catalogue') }}" class="btn btn-primary">Explorer le catalogue</a>
-        <a href="{{ url_for('setup_page') }}" class="btn btn-secondary">Configurer MariaDB (/setup)</a>
+        <a href="{{ url_for('shop.catalogue') }}" class="btn btn-primary">Explorer le catalogue</a>
+        <a href="{{ url_for('setup.setup_page') }}" class="btn btn-secondary">Configurer MariaDB (/setup)</a>
       </div>
     </div>
 
-    <div class="hero-visual">
-      <img src="{{ url_for('static', filename='images/hero_atelier_kibako.jpg') }}" alt="Boîte à musique artisanale en bois ouverte sur l'établi de l'Atelier Kibako">
-      <div class="hero-caption">
-        <span>Mécanisme 18 &amp; 30 lames en laiton</span>
-        <span>Assemblage queues d'aronde</span>
+    <div class="cad-stage">
+      <div class="cad-header">
+        <span><strong>Studio CAD 3D</strong> · Inspection mécanique temps réel</span>
+        <span class="cad-badge">THREE.JS · PBR · ORBIT</span>
+      </div>
+      <div class="cad-viewport" data-kibako-3d data-wood="Noyer Kurumi" data-mechanism="30 lames Sankyo"></div>
+      <div class="cad-toolbar">
+        <div class="cad-btn-group">
+          <button type="button" class="cad-btn" data-cad="explode">Vue éclatée</button>
+          <button type="button" class="cad-btn" data-cad="lid">Ouvrir / Fermer</button>
+          <button type="button" class="cad-btn" data-cad="wireframe">Filaire CAD</button>
+          <button type="button" class="cad-btn" data-cad="reset">Réinitialiser</button>
+        </div>
+        <select class="cad-select" data-cad="wood-select" aria-label="Essence de bois 3D">
+          <option value="Noyer Kurumi" selected>Noyer Kurumi</option>
+          <option value="Cerisier Sakura">Cerisier Sakura</option>
+          <option value="Cyprès Hinoki">Cyprès Hinoki</option>
+          <option value="Chêne Ébénisé">Chêne Ébénisé</option>
+          <option value="Érable Ondé">Érable Ondé</option>
+          <option value="Acajou Maritime">Acajou Maritime</option>
+        </select>
       </div>
     </div>
   </div>
@@ -32,27 +48,27 @@
     <div class="section-header">
       <div>
         <h2>Pièces Vedettes de l'Atelier</h2>
-        <p class="section-sub">Nos créations les plus demandées, testables directement à l'écoute sur chaque fiche.</p>
+        <p class="section-sub">Nos créations les plus demandées, avec simulateur 3D &amp; oscilloscope DSP sur chaque fiche.</p>
       </div>
-      <a href="{{ url_for('catalogue') }}" class="btn btn-secondary btn-sm">Voir tout le catalogue →</a>
+      <a href="{{ url_for('shop.catalogue') }}" class="btn btn-secondary btn-sm">Voir tout le catalogue →</a>
     </div>
 
     {% if featured_products %}
       <div class="product-grid">
         {% for product in featured_products %}
           <article class="product-card">
-            <a href="{{ url_for('product_detail', slug=product.slug) }}" class="product-thumb">
+            <a href="{{ url_for('shop.product_detail', slug=product.slug) }}" class="product-thumb">
               <img src="{{ product.image_url }}" alt="{{ product.name }}">
               <span class="product-universe-tag">{{ product.universe }}</span>
             </a>
             <div class="product-body">
               <h3 class="product-title">
-                <a href="{{ url_for('product_detail', slug=product.slug) }}">{{ product.name }}</a>
+                <a href="{{ url_for('shop.product_detail', slug=product.slug) }}">{{ product.name }}</a>
               </h3>
               <div class="product-meta">{{ product.wood_type }} · {{ product.mechanism }}</div>
               <div class="product-footer">
                 <span class="price">{{ "%.2f"|format(product.price) }} €</span>
-                <a href="{{ url_for('product_detail', slug=product.slug) }}" class="btn btn-primary btn-sm">Écouter &amp; Voir</a>
+                <a href="{{ url_for('shop.product_detail', slug=product.slug) }}" class="btn btn-primary btn-sm">Inspecter 3D &amp; Écouter</a>
               </div>
             </div>
           </article>
@@ -60,7 +76,7 @@
       </div>
     {% else %}
       <div class="panel">
-        <p style="margin:0;">Aucun produit n'est encore chargé. Rendez-vous sur <a href="{{ url_for('setup_page') }}" style="text-decoration:underline;font-weight:700;">/setup</a> pour initialiser la base et peupler les 8 boîtes à musique de démonstration.</p>
+        <p style="margin:0;">Aucun produit n'est encore chargé. Rendez-vous sur <a href="{{ url_for('setup.setup_page') }}" style="text-decoration:underline;font-weight:700;">/setup</a> pour initialiser la base et peupler les 8 boîtes à musique de démonstration.</p>
       </div>
     {% endif %}
   </div>
@@ -76,7 +92,7 @@
     </div>
     <div class="universes-grid">
       {% for cat in categories %}
-        <a href="{{ url_for('catalogue', category=cat.slug) }}" class="universe-card">
+        <a href="{{ url_for('shop.catalogue', category=cat.slug) }}" class="universe-card">
           <h3>{{ cat.name }}</h3>
           <p>{{ cat.description }}</p>
         </a>
@@ -89,27 +105,31 @@
   <div class="container">
     <div class="section-header">
       <div>
-        <h2>Le Savoir-Faire Kibako</h2>
-        <p class="section-sub">Une acoustique naturelle portée par la noblesse du bois et la précision mécanique.</p>
+        <h2>Architecture Technique &amp; Savoir-Faire</h2>
+        <p class="section-sub">Une acoustique naturelle portée par la noblesse du bois et une pile logicielle moderne.</p>
       </div>
     </div>
     <div class="craft-grid">
       <div class="craft-item">
-        <div class="craft-num">01 · ESSENCES NOBLES</div>
-        <h3>Bois massifs sélectionnés</h3>
-        <p>Cerisier sakura, noyer kurumi, érable ondé et cyprès hinoki séchés lentement pour offrir une caisse de résonance pure.</p>
+        <div class="craft-num">01 · RENDU 3D WEBGL</div>
+        <h3>Moteur Three.js &amp; GSAP</h3>
+        <p>Modélisation procédurale du coffret, des textures de bois PBR, du cylindre picoté et du peigne à lames animé en temps réel.</p>
       </div>
       <div class="craft-item">
-        <div class="craft-num">02 · ACOUSTIQUE</div>
-        <h3>Peignes 18 &amp; 30 lames</h3>
-        <p>Chaque cylindre en laiton est picoté avec précision pour restituer les harmonies et arpèges emblématiques sans fausse note.</p>
+        <div class="craft-num">02 · TRAITEMENT DSP</div>
+        <h3>Web Audio API &amp; FFT</h3>
+        <p>Synthèse harmonique des lames en laiton couplée à un oscilloscope temporel et fréquentiel synchronisé à la rotation 3D.</p>
       </div>
       <div class="craft-item">
-        <div class="craft-num">03 · MARQUETERIE</div>
-        <h3>Gravure &amp; incrustation</h3>
-        <p>Motifs asanoha, vagues japonaises et emblèmes pop culture gravés au laser fin ou incrustés à la feuille de laiton.</p>
+        <div class="craft-num">03 · BACKEND MODULAIRE</div>
+        <h3>Flask Blueprints &amp; ORM 2.x</h3>
+        <p>Architecture découpée en 5 Blueprints, bascule à chaud MariaDB/SQLite sans redémarrage et transactions atomiques.</p>
       </div>
     </div>
   </div>
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='js/kibako3d.js') }}"></script>
 {% endblock %}

@@ -4,15 +4,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Atelier Kibako — Boîtes à musique artisanales en bois{% endblock %}</title>
-  <meta name="description" content="{% block meta_description %}Boîtes à musique artisanales en bois nobles (cerisier sakura, noyer kurumi, cyprès hinoki) inspirées des univers Manga, Studio Ghibli, Jeux Vidéo et Cinéma.{% endblock %}">
+  <meta name="description" content="{% block meta_description %}Boîtes à musique artisanales en bois nobles (cerisier sakura, noyer kurumi, cyprès hinoki) inspirées des univers Manga, Studio Ghibli, Jeux Vidéo et Cinéma. Configurateur 3D WebGL &amp; synthèse acoustique.{% endblock %}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+  <!-- Import Map Three.js (WebGL 3D CAD Engine) -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+  <!-- GSAP 3.12 & Chart.js 4.4 -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
 </head>
 <body>
   <div class="promo-bar">
-    Livraison offerte dès <strong>{{ "%.0f"|format(free_shipping_threshold) }} €</strong> d'achat · Fabrication &amp; accordage artisanal en bois massif
+    Livraison offerte dès <strong>{{ "%.0f"|format(free_shipping_threshold) }} €</strong> · Inspecteur CAD 3D WebGL &amp; Synthèse acoustique Web Audio API
   </div>
 
   {% if not db_status.ready or not db_status.configured %}
@@ -25,34 +38,34 @@
           <strong>Mode aperçu actif :</strong> configurez votre base MariaDB ou initialisez le catalogue en un clic.
         {% endif %}
       </span>
-      <a href="{{ url_for('setup_page') }}" class="btn btn-primary btn-sm">Configurer la base (/setup)</a>
+      <a href="{{ url_for('setup.setup_page') }}" class="btn btn-primary btn-sm">Configurer la base (/setup)</a>
     </div>
   </div>
   {% endif %}
 
   <header class="site-header">
     <div class="container nav-inner">
-      <a href="{{ url_for('index') }}" class="brand">
+      <a href="{{ url_for('shop.index') }}" class="brand">
         <span class="brand-mark" aria-hidden="true">木</span>
         <span class="brand-text">
           <span class="brand-name">Atelier Kibako</span>
-          <span class="brand-sub">Boîtes à musique en bois</span>
+          <span class="brand-sub">Ébénisterie &amp; Ingénierie 3D</span>
         </span>
       </a>
 
       <nav class="nav-links" aria-label="Navigation principale">
-        <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Accueil</a>
-        <a href="{{ url_for('catalogue') }}" class="{% if request.endpoint == 'catalogue' %}active{% endif %}">Catalogue</a>
-        <a href="{{ url_for('admin_dashboard') }}" class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}">Atelier Admin</a>
-        <a href="{{ url_for('setup_page') }}" class="{% if request.endpoint == 'setup_page' %}active{% endif %}">Configuration ORM</a>
+        <a href="{{ url_for('shop.index') }}" class="{% if request.endpoint == 'shop.index' %}active{% endif %}">Accueil</a>
+        <a href="{{ url_for('shop.catalogue') }}" class="{% if request.endpoint == 'shop.catalogue' %}active{% endif %}">Catalogue</a>
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="{% if request.endpoint == 'admin.admin_dashboard' %}active{% endif %}">Atelier Admin</a>
+        <a href="{{ url_for('setup.setup_page') }}" class="{% if request.endpoint == 'setup.setup_page' %}active{% endif %}">Configuration ORM</a>
       </nav>
 
       <div class="nav-actions">
-        <a href="{{ url_for('setup_page') }}" class="nav-setup-pill" title="{{ db_status.masked_uri }}">
+        <a href="{{ url_for('setup.setup_page') }}" class="nav-setup-pill" title="{{ db_status.masked_uri }}">
           <span class="status-dot {% if not db_status.ready %}warn{% endif %}"></span>
           <span>{{ 'MariaDB' if db_status.mode == 'mariadb' else 'SQLite' }}</span>
         </a>
-        <a href="{{ url_for('cart_view') }}" class="cart-link" id="nav-cart-link">
+        <a href="{{ url_for('cart.cart_view') }}" class="cart-link" id="nav-cart-link">
           <span>Panier</span>
           <span class="cart-badge">{{ cart_count }}</span>
         </a>
@@ -86,23 +99,23 @@
         <div>
           <h4>Boutique</h4>
           <ul>
-            <li><a href="{{ url_for('catalogue') }}">Toutes les boîtes à musique</a></li>
+            <li><a href="{{ url_for('shop.catalogue') }}">Toutes les boîtes à musique</a></li>
             {% for cat in categories_nav %}
-              <li><a href="{{ url_for('catalogue', category=cat.slug) }}">{{ cat.name }}</a></li>
+              <li><a href="{{ url_for('shop.catalogue', category=cat.slug) }}">{{ cat.name }}</a></li>
             {% endfor %}
           </ul>
         </div>
         <div>
-          <h4>Atelier &amp; Technique</h4>
+          <h4>Architecture &amp; APIs</h4>
           <ul>
-            <li><a href="{{ url_for('setup_page') }}">Configuration MariaDB (/setup)</a></li>
-            <li><a href="{{ url_for('admin_dashboard') }}">Gestion Atelier (/admin)</a></li>
-            <li><a href="{{ url_for('cart_view') }}">Mon Panier</a></li>
+            <li><a href="{{ url_for('setup.setup_page') }}">Configuration MariaDB (/setup)</a></li>
+            <li><a href="{{ url_for('admin.admin_dashboard') }}">Télémétrie Atelier (/admin)</a></li>
+            <li><a href="{{ url_for('api.health') }}">API Santé (/api/v1/health)</a></li>
           </ul>
         </div>
       </div>
       <div class="footer-bottom">
-        <span>© Atelier Kibako — Flask · SQLAlchemy 2.x · MariaDB / SQLite</span>
+        <span>© Atelier Kibako — Flask Blueprints · SQLAlchemy 2.x · Three.js WebGL · GSAP · Chart.js</span>
         <span>Frais de port offerts dès 80 €</span>
       </div>
     </div>

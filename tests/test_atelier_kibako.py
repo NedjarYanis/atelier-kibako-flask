@@ -187,6 +187,19 @@ class AtelierKibakoTestCase(unittest.TestCase):
         with self.app.app_context():
             self.assertEqual(db.session.get(Order, order_id).status, "Expédiée")
 
+        # API v1 REST & Télémétrie Chart.js
+        res_health = self.client.get("/api/v1/health")
+        self.assertEqual(res_health.status_code, 200)
+        self.assertTrue(res_health.get_json()["db_ready"])
+
+        res_prods_api = self.client.get("/api/v1/products")
+        self.assertEqual(res_prods_api.status_code, 200)
+        self.assertEqual(res_prods_api.get_json()["count"], 8)
+
+        res_tel = self.client.get("/api/v1/telemetry")
+        self.assertEqual(res_tel.status_code, 200)
+        self.assertTrue(res_tel.get_json()["ok"])
+
 
 if __name__ == "__main__":
     unittest.main()

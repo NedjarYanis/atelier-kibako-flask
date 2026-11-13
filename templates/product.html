@@ -6,14 +6,33 @@
 <section class="section">
   <div class="container">
     <p style="font-size:0.86rem;color:var(--ink-muted);margin-bottom:1.25rem;">
-      <a href="{{ url_for('catalogue') }}">Catalogue</a> /
-      <a href="{{ url_for('catalogue', category=product.category.slug) }}">{{ product.category.name }}</a> /
+      <a href="{{ url_for('shop.catalogue') }}">Catalogue</a> /
+      <a href="{{ url_for('shop.catalogue', category=product.category.slug) }}">{{ product.category.name }}</a> /
       <span>{{ product.universe }}</span>
     </p>
 
     <div class="product-detail-grid">
-      <div class="product-gallery">
-        <img src="{{ product.image_url }}" alt="{{ product.name }}">
+      <div>
+        <div class="product-gallery" style="margin-bottom:1.25rem;">
+          <img src="{{ product.image_url }}" alt="{{ product.name }}">
+        </div>
+
+        <!-- Inspecteur 3D CAD synchronisé avec le lecteur audio -->
+        <div class="cad-stage">
+          <div class="cad-header">
+            <span><strong>Inspecteur 3D</strong> · {{ product.wood_type }}</span>
+            <span class="cad-badge">SYNCHRO AUDIO-3D</span>
+          </div>
+          <div class="cad-viewport" style="height:320px;" data-kibako-3d data-wood="{{ product.wood_type }}" data-mechanism="{{ product.mechanism }}"></div>
+          <div class="cad-toolbar">
+            <div class="cad-btn-group">
+              <button type="button" class="cad-btn" data-cad="explode">Vue éclatée</button>
+              <button type="button" class="cad-btn" data-cad="lid">Couvercle</button>
+              <button type="button" class="cad-btn" data-cad="wireframe">Filaire</button>
+              <button type="button" class="cad-btn" data-cad="reset">Reset</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div>
@@ -51,20 +70,25 @@
           <div class="player-top">
             <div>
               <h3 class="player-title">Simulateur acoustique · {{ product.melody_title }}</h3>
-              <div class="player-sub">Synthèse Web Audio API des lames en laiton</div>
+              <div class="player-sub">Web Audio API + Oscilloscope DSP + Rotation cylindre 3D</div>
             </div>
             <span class="note-readout" id="mb-note-readout">Prêt</span>
           </div>
           <div class="player-controls">
             <button type="button" class="btn btn-brass btn-sm" id="mb-play-btn">▶ Écouter la mélodie</button>
             <button type="button" class="btn btn-secondary btn-sm" id="mb-stop-btn">■ Arrêter</button>
+            <label style="color:#cbbba6;font-size:0.78rem;display:flex;align-items:center;gap:0.45rem;margin:0 0 0 auto;">
+              Tempo <input type="range" id="mb-tempo" min="0.6" max="1.5" step="0.05" value="1.0" style="width:90px;padding:0;">
+              <span class="mono" id="mb-tempo-val">1.00×</span>
+            </label>
           </div>
+          <canvas id="mb-scope" class="scope-canvas" width="520" height="68"></canvas>
           <div class="comb-visualizer" id="mb-comb" aria-hidden="true"></div>
           <script type="application/json" id="melody-notes-data">{{ product.melody_notes | tojson }}</script>
         </div>
 
         {% if product.stock > 0 %}
-          <form method="post" action="{{ url_for('cart_add') }}" style="display:flex;gap:0.85rem;align-items:end;margin-top:1.5rem;">
+          <form method="post" action="{{ url_for('cart.cart_add') }}" style="display:flex;gap:0.85rem;align-items:end;margin-top:1.5rem;">
             <input type="hidden" name="product_id" value="{{ product.id }}">
             <div style="width:95px;">
               <label for="qty-input">Quantité</label>
@@ -84,16 +108,16 @@
         <div class="product-grid">
           {% for item in related %}
             <article class="product-card">
-              <a href="{{ url_for('product_detail', slug=item.slug) }}" class="product-thumb">
+              <a href="{{ url_for('shop.product_detail', slug=item.slug) }}" class="product-thumb">
                 <img src="{{ item.image_url }}" alt="{{ item.name }}">
                 <span class="product-universe-tag">{{ item.universe }}</span>
               </a>
               <div class="product-body">
-                <h3 class="product-title"><a href="{{ url_for('product_detail', slug=item.slug) }}">{{ item.name }}</a></h3>
+                <h3 class="product-title"><a href="{{ url_for('shop.product_detail', slug=item.slug) }}">{{ item.name }}</a></h3>
                 <div class="product-meta">{{ item.wood_type }}</div>
                 <div class="product-footer">
                   <span class="price">{{ "%.2f"|format(item.price) }} €</span>
-                  <a href="{{ url_for('product_detail', slug=item.slug) }}" class="btn btn-secondary btn-sm">Voir</a>
+                  <a href="{{ url_for('shop.product_detail', slug=item.slug) }}" class="btn btn-secondary btn-sm">Voir</a>
                 </div>
               </div>
             </article>
@@ -106,5 +130,6 @@
 {% endblock %}
 
 {% block scripts %}
+<script type="module" src="{{ url_for('static', filename='js/kibako3d.js') }}"></script>
 <script src="{{ url_for('static', filename='js/musicbox.js') }}"></script>
 {% endblock %}

@@ -7,10 +7,10 @@
   <div class="container">
     <div class="section-header">
       <div>
-        <div class="hero-kicker">Gestion de l'Atelier</div>
+        <div class="hero-kicker">Gestion &amp; Télémétrie (Chart.js + /api/v1/telemetry)</div>
         <h1>Produits &amp; Commandes</h1>
       </div>
-      <form method="post" action="{{ url_for('admin_seed') }}">
+      <form method="post" action="{{ url_for('admin.admin_seed') }}">
         <button type="submit" class="btn btn-secondary btn-sm">Compléter catalogue démo</button>
       </form>
     </div>
@@ -30,8 +30,19 @@
       </div>
     </div>
 
+    <div class="charts-grid">
+      <div class="panel">
+        <h3>Stock par essence de bois</h3>
+        <canvas id="chart-wood-stock" height="140"></canvas>
+      </div>
+      <div class="panel">
+        <h3>Répartition par univers</h3>
+        <canvas id="chart-categories" height="180"></canvas>
+      </div>
+    </div>
+
     <div class="two-col-layout" style="margin-bottom:2.5rem;">
-      <form method="post" action="{{ url_for('admin_add_product') }}" class="panel">
+      <form method="post" action="{{ url_for('admin.admin_add_product') }}" class="panel">
         <h3>Ajouter une boîte à musique</h3>
         <div style="display:grid;gap:0.9rem;">
           <div class="form-grid-2">
@@ -116,13 +127,13 @@
             {% for p in products %}
               <tr>
                 <td>
-                  <a href="{{ url_for('product_detail', slug=p.slug) }}" style="font-weight:600;">{{ p.name }}</a>
+                  <a href="{{ url_for('shop.product_detail', slug=p.slug) }}" style="font-weight:600;">{{ p.name }}</a>
                   <div style="font-size:0.78rem;color:var(--ink-muted);">{{ p.universe }} · {{ p.wood_type }}</div>
                 </td>
                 <td>{{ "%.2f"|format(p.price) }} €</td>
                 <td>{{ p.stock }}</td>
                 <td>
-                  <form method="post" action="{{ url_for('admin_delete_product', product_id=p.id) }}">
+                  <form method="post" action="{{ url_for('admin.admin_delete_product', product_id=p.id) }}">
                     <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
                   </form>
                 </td>
@@ -157,7 +168,7 @@
                 <td><strong>{{ "%.2f"|format(o.total_amount) }} €</strong></td>
                 <td>{{ o.status }}</td>
                 <td>
-                  <form method="post" action="{{ url_for('admin_update_order_status', order_id=o.id) }}" style="display:flex;gap:0.45rem;">
+                  <form method="post" action="{{ url_for('admin.admin_update_order_status', order_id=o.id) }}" style="display:flex;gap:0.45rem;">
                     <select name="status" style="width:auto;padding:0.4rem 0.65rem;">
                       {% for st in order_statuses %}
                         <option value="{{ st }}" {% if o.status == st %}selected{% endif %}>{{ st }}</option>
@@ -176,4 +187,8 @@
     </div>
   </div>
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin_charts.js') }}" defer></script>
 {% endblock %}
