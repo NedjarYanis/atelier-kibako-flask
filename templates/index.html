@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Atelier Kibako — Boîtes à musique en bois Pop Culture &amp; Manga{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <div class="hero-kicker">Ébénisterie Musicale · Japon &amp; Pop Culture</div>
+      <h1>Des mélodies cultes sculptées dans le bois massif.</h1>
+      <p class="hero-lead">
+        Chaque boîte à musique Atelier Kibako réunit la chaleur du cerisier sakura, du noyer kurumi ou du cyprès hinoki avec un peigne en laiton accordé sur vos thèmes favoris de Manga, Studio Ghibli et Jeux Vidéo.
+      </p>
+      <div class="hero-cta">
+        <a href="{{ url_for('catalogue') }}" class="btn btn-primary">Explorer le catalogue</a>
+        <a href="{{ url_for('setup_page') }}" class="btn btn-secondary">Configurer MariaDB (/setup)</a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <img src="{{ url_for('static', filename='images/hero_atelier_kibako.jpg') }}" alt="Boîte à musique artisanale en bois ouverte sur l'établi de l'Atelier Kibako">
+      <div class="hero-caption">
+        <span>Mécanisme 18 &amp; 30 lames en laiton</span>
+        <span>Assemblage queues d'aronde</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h2>Pièces Vedettes de l'Atelier</h2>
+        <p class="section-sub">Nos créations les plus demandées, testables directement à l'écoute sur chaque fiche.</p>
+      </div>
+      <a href="{{ url_for('catalogue') }}" class="btn btn-secondary btn-sm">Voir tout le catalogue →</a>
+    </div>
+
+    {% if featured_products %}
+      <div class="product-grid">
+        {% for product in featured_products %}
+          <article class="product-card">
+            <a href="{{ url_for('product_detail', slug=product.slug) }}" class="product-thumb">
+              <img src="{{ product.image_url }}" alt="{{ product.name }}">
+              <span class="product-universe-tag">{{ product.universe }}</span>
+            </a>
+            <div class="product-body">
+              <h3 class="product-title">
+                <a href="{{ url_for('product_detail', slug=product.slug) }}">{{ product.name }}</a>
+              </h3>
+              <div class="product-meta">{{ product.wood_type }} · {{ product.mechanism }}</div>
+              <div class="product-footer">
+                <span class="price">{{ "%.2f"|format(product.price) }} €</span>
+                <a href="{{ url_for('product_detail', slug=product.slug) }}" class="btn btn-primary btn-sm">Écouter &amp; Voir</a>
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="panel">
+        <p style="margin:0;">Aucun produit n'est encore chargé. Rendez-vous sur <a href="{{ url_for('setup_page') }}" style="text-decoration:underline;font-weight:700;">/setup</a> pour initialiser la base et peupler les 8 boîtes à musique de démonstration.</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="section section-muted">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h2>Nos Univers Musicaux</h2>
+        <p class="section-sub">Quatre collections pensées pour les passionnés d'animation, de jeux vidéo et de cinéma.</p>
+      </div>
+    </div>
+    <div class="universes-grid">
+      {% for cat in categories %}
+        <a href="{{ url_for('catalogue', category=cat.slug) }}" class="universe-card">
+          <h3>{{ cat.name }}</h3>
+          <p>{{ cat.description }}</p>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h2>Le Savoir-Faire Kibako</h2>
+        <p class="section-sub">Une acoustique naturelle portée par la noblesse du bois et la précision mécanique.</p>
+      </div>
+    </div>
+    <div class="craft-grid">
+      <div class="craft-item">
+        <div class="craft-num">01 · ESSENCES NOBLES</div>
+        <h3>Bois massifs sélectionnés</h3>
+        <p>Cerisier sakura, noyer kurumi, érable ondé et cyprès hinoki séchés lentement pour offrir une caisse de résonance pure.</p>
+      </div>
+      <div class="craft-item">
+        <div class="craft-num">02 · ACOUSTIQUE</div>
+        <h3>Peignes 18 &amp; 30 lames</h3>
+        <p>Chaque cylindre en laiton est picoté avec précision pour restituer les harmonies et arpèges emblématiques sans fausse note.</p>
+      </div>
+      <div class="craft-item">
+        <div class="craft-num">03 · MARQUETERIE</div>
+        <h3>Gravure &amp; incrustation</h3>
+        <p>Motifs asanoha, vagues japonaises et emblèmes pop culture gravés au laser fin ou incrustés à la feuille de laiton.</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

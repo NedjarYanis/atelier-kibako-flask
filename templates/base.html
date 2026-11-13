@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Atelier Kibako — Boîtes à musique artisanales en bois{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}Boîtes à musique artisanales en bois nobles (cerisier sakura, noyer kurumi, cyprès hinoki) inspirées des univers Manga, Studio Ghibli, Jeux Vidéo et Cinéma.{% endblock %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="promo-bar">
+    Livraison offerte dès <strong>{{ "%.0f"|format(free_shipping_threshold) }} €</strong> d'achat · Fabrication &amp; accordage artisanal en bois massif
+  </div>
+
+  {% if not db_status.ready or not db_status.configured %}
+  <div class="db-warning-banner">
+    <div class="container">
+      <span>
+        {% if not db_status.ready %}
+          <strong>Base de données non initialisée :</strong> {{ db_status.message }}
+        {% else %}
+          <strong>Mode aperçu actif :</strong> configurez votre base MariaDB ou initialisez le catalogue en un clic.
+        {% endif %}
+      </span>
+      <a href="{{ url_for('setup_page') }}" class="btn btn-primary btn-sm">Configurer la base (/setup)</a>
+    </div>
+  </div>
+  {% endif %}
+
+  <header class="site-header">
+    <div class="container nav-inner">
+      <a href="{{ url_for('index') }}" class="brand">
+        <span class="brand-mark" aria-hidden="true">木</span>
+        <span class="brand-text">
+          <span class="brand-name">Atelier Kibako</span>
+          <span class="brand-sub">Boîtes à musique en bois</span>
+        </span>
+      </a>
+
+      <nav class="nav-links" aria-label="Navigation principale">
+        <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Accueil</a>
+        <a href="{{ url_for('catalogue') }}" class="{% if request.endpoint == 'catalogue' %}active{% endif %}">Catalogue</a>
+        <a href="{{ url_for('admin_dashboard') }}" class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}">Atelier Admin</a>
+        <a href="{{ url_for('setup_page') }}" class="{% if request.endpoint == 'setup_page' %}active{% endif %}">Configuration ORM</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="{{ url_for('setup_page') }}" class="nav-setup-pill" title="{{ db_status.masked_uri }}">
+          <span class="status-dot {% if not db_status.ready %}warn{% endif %}"></span>
+          <span>{{ 'MariaDB' if db_status.mode == 'mariadb' else 'SQLite' }}</span>
+        </a>
+        <a href="{{ url_for('cart_view') }}" class="cart-link" id="nav-cart-link">
+          <span>Panier</span>
+          <span class="cart-badge">{{ cart_count }}</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="container flash-stack">
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h4>Atelier Kibako</h4>
+          <p style="font-size:0.9rem;color:#bdb2a4;max-width:40ch;">
+            Ébénisterie musicale inspirée des traditions japonaises. Chaque coffret marie essences de bois sélectionnées et mécanismes à lames accordés avec précision.
+          </p>
+        </div>
+        <div>
+          <h4>Boutique</h4>
+          <ul>
+            <li><a href="{{ url_for('catalogue') }}">Toutes les boîtes à musique</a></li>
+            {% for cat in categories_nav %}
+              <li><a href="{{ url_for('catalogue', category=cat.slug) }}">{{ cat.name }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div>
+          <h4>Atelier &amp; Technique</h4>
+          <ul>
+            <li><a href="{{ url_for('setup_page') }}">Configuration MariaDB (/setup)</a></li>
+            <li><a href="{{ url_for('admin_dashboard') }}">Gestion Atelier (/admin)</a></li>
+            <li><a href="{{ url_for('cart_view') }}">Mon Panier</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© Atelier Kibako — Flask · SQLAlchemy 2.x · MariaDB / SQLite</span>
+        <span>Frais de port offerts dès 80 €</span>
+      </div>
+    </div>
+  </footer>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

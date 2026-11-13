@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Configuration Base de Données (/setup) — Atelier Kibako{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container" style="max-width:860px;">
+    <div class="section-header">
+      <div>
+        <div class="hero-kicker">Configuration 100 % Visuelle</div>
+        <h1>Connexion MariaDB &amp; Initialisation ORM</h1>
+        <p class="section-sub">
+          Configurez votre base sans éditer de fichier à la main. Le moteur SQLAlchemy bascule à chaud sans redémarrer Flask.
+        </p>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-bottom:1.5rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;">
+        <div>
+          <span style="font-size:0.82rem;color:var(--ink-muted);display:block;">Moteur actif en mémoire</span>
+          <span class="mono">{{ db_status.masked_uri }}</span>
+        </div>
+        <span class="btn btn-sm {% if db_status.ready %}btn-matcha{% else %}btn-secondary{% endif %}" style="pointer-events:none;">
+          {% if db_status.ready %}ORM Prêt ({{ db_status.mode }}){% else %}En attente d'initialisation{% endif %}
+        </span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="setup-tabs" role="tablist">
+        <button type="button" class="setup-tab active" data-mode="fields">
+          <strong>1. Champs MariaDB</strong>
+          <span>Hôte, port, base, identifiants</span>
+        </button>
+        <button type="button" class="setup-tab" data-mode="uri">
+          <strong>2. Lien / URI direct</strong>
+          <span>mariadb:// ou mysql+pymysql://</span>
+        </button>
+        <button type="button" class="setup-tab" data-mode="sqlite">
+          <strong>3. Aperçu Local (SQLite)</strong>
+          <span>Test immédiat sans serveur MariaDB</span>
+        </button>
+      </div>
+
+      <!-- Mode 1 : Champs MariaDB -->
+      <div class="setup-mode-panel" data-mode-panel="fields">
+        <div style="display:grid;gap:1rem;">
+          <div class="form-grid-2">
+            <div>
+              <label for="db-host">Hôte MariaDB</label>
+              <input type="text" id="db-host" value="127.0.0.1" placeholder="127.0.0.1">
+            </div>
+            <div>
+              <label for="db-port">Port</label>
+              <input type="number" id="db-port" value="3306" placeholder="3306">
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div>
+              <label for="db-name">Nom de la base</label>
+              <input type="text" id="db-name" value="atelier_kibako" placeholder="atelier_kibako">
+            </div>
+            <div>
+              <label for="db-user">Utilisateur</label>
+              <input type="text" id="db-user" value="kibako" placeholder="root">
+            </div>
+          </div>
+
+          <div>
+            <label for="db-password">Mot de passe</label>
+            <div class="password-wrap">
+              <input type="password" id="db-password" placeholder="Mot de passe MariaDB">
+              <button type="button" class="btn btn-secondary btn-sm" id="toggle-password-btn">Afficher</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mode 2 : URI directe -->
+      <div class="setup-mode-panel" data-mode-panel="uri" style="display:none;">
+        <div>
+          <label for="db-uri">URI de connexion MariaDB / MySQL</label>
+          <input type="text" id="db-uri" placeholder="mariadb://kibako:motdepasse@127.0.0.1:3306/atelier_kibako">
+          <p style="font-size:0.83rem;color:var(--ink-muted);margin:0.5rem 0 0;">
+            Les préfixes <span class="mono">mariadb://</span>, <span class="mono">mysql://</span> et <span class="mono">mysql+pymysql://</span> sont automatiquement normalisés.
+          </p>
+        </div>
+      </div>
+
+      <!-- Mode 3 : Aperçu SQLite -->
+      <div class="setup-mode-panel" data-mode-panel="sqlite" style="display:none;">
+        <div style="background:var(--bg-surface);padding:1rem 1.15rem;border-radius:8px;">
+          <strong>Mode Aperçu Local (SQLite)</strong>
+          <p style="margin:0.4rem 0 0;font-size:0.9rem;color:var(--ink-secondary);">
+            Crée automatiquement une base locale <span class="mono">instance/atelier_kibako.db</span> pour tester immédiatement toute la boutique, le lecteur audio et les transactions ORM sans installer MariaDB.
+          </p>
+        </div>
+      </div>
+
+      <div style="margin-top:1.25rem;display:flex;align-items:center;gap:0.6rem;">
+        <input type="checkbox" id="seed-demo-checkbox" checked style="width:auto;">
+        <label for="seed-demo-checkbox" style="margin:0;font-weight:500;">
+          Peupler automatiquement les 4 catégories et 8 boîtes à musique Pop Culture &amp; Manga
+        </label>
+      </div>
+
+      <div style="display:flex;gap:0.85rem;margin-top:1.5rem;flex-wrap:wrap;">
+        <button type="button" class="btn btn-secondary" id="setup-test-btn">Tester la connexion</button>
+        <button type="button" class="btn btn-primary" id="setup-save-btn">Sauvegarder &amp; Initialiser l'ORM</button>
+      </div>
+
+      <div id="setup-diagnostic" class="diagnostic-box" role="status" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/setup.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}Atelier Admin — Atelier Kibako{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <div class="hero-kicker">Gestion de l'Atelier</div>
+        <h1>Produits &amp; Commandes</h1>
+      </div>
+      <form method="post" action="{{ url_for('admin_seed') }}">
+        <button type="submit" class="btn btn-secondary btn-sm">Compléter catalogue démo</button>
+      </form>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Boîtes en catalogue</div>
+        <div class="stat-val">{{ products|length }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Commandes</div>
+        <div class="stat-val">{{ orders|length }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Chiffre d'affaires</div>
+        <div class="stat-val">{{ "%.2f"|format(revenue) }} €</div>
+      </div>
+    </div>
+
+    <div class="two-col-layout" style="margin-bottom:2.5rem;">
+      <form method="post" action="{{ url_for('admin_add_product') }}" class="panel">
+        <h3>Ajouter une boîte à musique</h3>
+        <div style="display:grid;gap:0.9rem;">
+          <div class="form-grid-2">
+            <div>
+              <label for="prod-name">Nom du modèle *</label>
+              <input type="text" id="prod-name" name="name" required placeholder="Kibako Spirited Away">
+            </div>
+            <div>
+              <label for="prod-universe">Univers *</label>
+              <input type="text" id="prod-universe" name="universe" required placeholder="Le Voyage de Chihiro">
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div>
+              <label for="prod-melody">Mélodie *</label>
+              <input type="text" id="prod-melody" name="melody_title" required placeholder="One Summer's Day">
+            </div>
+            <div>
+              <label for="prod-cat">Catégorie *</label>
+              <select id="prod-cat" name="category_id" required>
+                {% for cat in categories %}
+                  <option value="{{ cat.id }}">{{ cat.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div>
+              <label for="prod-wood">Essence de bois *</label>
+              <input type="text" id="prod-wood" name="wood_type" required placeholder="Noyer Kurumi">
+            </div>
+            <div>
+              <label for="prod-mech">Mécanisme *</label>
+              <input type="text" id="prod-mech" name="mechanism" required value="18 lames à remontoir">
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div>
+              <label for="prod-price">Prix (€) *</label>
+              <input type="number" step="0.01" id="prod-price" name="price" required value="69.00">
+            </div>
+            <div>
+              <label for="prod-stock">Stock *</label>
+              <input type="number" id="prod-stock" name="stock" required value="10">
+            </div>
+          </div>
+
+          <div>
+            <label for="prod-img">Image URL</label>
+            <input type="text" id="prod-img" name="image_url" value="/static/images/box_walnut_ghibli.jpg">
+          </div>
+
+          <div>
+            <label for="prod-desc">Description *</label>
+            <textarea id="prod-desc" name="description" rows="3" required placeholder="Description artisanale de la boîte…"></textarea>
+          </div>
+
+          <label style="display:flex;align-items:center;gap:0.5rem;font-weight:500;">
+            <input type="checkbox" name="featured" style="width:auto;">
+            Mettre en avant sur la page d'accueil
+          </label>
+
+          <button type="submit" class="btn btn-primary">Ajouter au catalogue</button>
+        </div>
+      </form>
+
+      <div class="panel table-wrap">
+        <h3>Catalogue actuel</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Modèle</th>
+              <th>Prix</th>
+              <th>Stock</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in products %}
+              <tr>
+                <td>
+                  <a href="{{ url_for('product_detail', slug=p.slug) }}" style="font-weight:600;">{{ p.name }}</a>
+                  <div style="font-size:0.78rem;color:var(--ink-muted);">{{ p.universe }} · {{ p.wood_type }}</div>
+                </td>
+                <td>{{ "%.2f"|format(p.price) }} €</td>
+                <td>{{ p.stock }}</td>
+                <td>
+                  <form method="post" action="{{ url_for('admin_delete_product', product_id=p.id) }}">
+                    <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel table-wrap">
+      <h3>Commandes clients</h3>
+      {% if orders %}
+        <table>
+          <thead>
+            <tr>
+              <th>N° Commande</th>
+              <th>Client</th>
+              <th>Total</th>
+              <th>Statut</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for o in orders %}
+              <tr>
+                <td class="mono">{{ o.order_number }}</td>
+                <td>
+                  <strong>{{ o.customer_name }}</strong>
+                  <div style="font-size:0.8rem;color:var(--ink-muted);">{{ o.customer_email }} · {{ o.city }}</div>
+                </td>
+                <td><strong>{{ "%.2f"|format(o.total_amount) }} €</strong></td>
+                <td>{{ o.status }}</td>
+                <td>
+                  <form method="post" action="{{ url_for('admin_update_order_status', order_id=o.id) }}" style="display:flex;gap:0.45rem;">
+                    <select name="status" style="width:auto;padding:0.4rem 0.65rem;">
+                      {% for st in order_statuses %}
+                        <option value="{{ st }}" {% if o.status == st %}selected{% endif %}>{{ st }}</option>
+                      {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-secondary btn-sm">Mettre à jour</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p style="margin:0;color:var(--ink-muted);">Aucune commande enregistrée pour le moment.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}
